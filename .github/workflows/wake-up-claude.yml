@@ -11,6 +11,7 @@ jobs:
       run: ${{ steps.check-run.outputs.run }}
     steps:
       - name: Check local time
+        id: check-run
         run: |
           if [[ "${{ github.event_name }}" == 'schedule' ]]; then
             echo "Checking daylight saving time"
