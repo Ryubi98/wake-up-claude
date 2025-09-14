@@ -22,7 +22,7 @@ jobs:
               echo "run=False" >> "$GITHUB_OUTPUT"
             fi
           else
-            echo 'Trigger is not cron, ommiting time check!'
+            echo 'Trigger is not cron, omitting time check!'
             echo "run=True" >> "$GITHUB_OUTPUT"
           fi
 
