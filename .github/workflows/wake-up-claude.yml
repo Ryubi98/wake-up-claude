@@ -1,7 +1,7 @@
 name: Wake up Claude
 on:
   schedule:
-    - cron: "0 4,5 * * *" # At 04:00 and 05:00 UTC daily
+    - cron: "0 4,5,9,10,14,15 * * *" # At 04:00, 05:00, 09:00, 10:00, 14:00 and 15:00 UTC daily
   workflow_dispatch:
 
 jobs:
@@ -14,12 +14,12 @@ jobs:
         id: check-run
         run: |
           if [[ "${{ github.event_name }}" == 'schedule' ]]; then
-            echo "Checking daylight saving time"
-            if [ $(TZ="Europe/Paris" date +%H) -eq '6' ]; then 
-              echo 'Time to run!'
+            PARIS_HOUR=$(TZ="Europe/Paris" date +%H)
+            if [ $PARIS_HOUR -eq '6' ] || [ $PARIS_HOUR -eq '11' ] || [ $PARIS_HOUR -eq '16' ]; then 
+              echo "It's ${PARIS_HOUR}:00 in Europe/Paris. Time to run!"
               echo "run=True" >> "$GITHUB_OUTPUT"
             else
-              echo "It's not 06:00 local time in Europe/Paris. Waiting for next execution..."
+              echo "It's ${PARIS_HOUR}:00 in Europe/Paris. Not a scheduled time. Waiting for next execution..."
               echo "run=False" >> "$GITHUB_OUTPUT"
             fi
           else
