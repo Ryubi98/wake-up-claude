@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Check local time
         run: |
-          if [[ ${TRIGGER} == 'schedule' ]]; then
+          if [[ "${{ github.event_name }}" == 'schedule' ]]; then
             echo "Checking daylight saving time"
             if [ $(TZ="Europe/Paris" date +%H) -eq '6' ]; then 
               echo 'Time to run!'
