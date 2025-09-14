@@ -21,3 +21,5 @@ jobs:
 
       - name: Run script
         run: node index.js
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
