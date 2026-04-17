@@ -82,15 +82,12 @@ cd wake-up-claude
 By default, the workflow runs at **6 AM, 11 AM, and 4 PM** (Paris time). To modify:
 
 1. Open `.github/workflows/wake-up-claude.yml`
-2. Modify the `cron` line and conditions in the `check-run` job
+2. Modify the `cron` line (hours are expressed directly in the configured timezone)
 3. Example for 8 AM, 2 PM, and 8 PM:
    ```yaml
    schedule:
-     - cron: "0 6,7,12,13,18,19 * * *" # UTC times
-   ```
-   Then adjust the conditions:
-   ```bash
-   if [ $PARIS_HOUR -eq '8' ] || [ $PARIS_HOUR -eq '14' ] || [ $PARIS_HOUR -eq '20' ]; then
+     - cron: "0 8,14,20 * * *"
+       timezone: "Europe/Paris"
    ```
 
 ### 4. Enable GitHub Actions
@@ -118,26 +115,24 @@ You should see a message confirming that the session has started with an ID.
 
 ### GitHub Actions Workflow
 
-The workflow consists of two jobs:
+A single `wake-up` job executes the Node.js script:
 
-1. **check-run**: Checks local time (Europe/Paris) to decide if the script should run
-
-   - Only executes at configured times (6 AM, 11 AM, 4 PM by default)
-   - Allows manual triggering via `workflow_dispatch`
-
-2. **wake-up**: Executes the Node.js script
-   - Installs Node.js 20
-   - Caches npm dependencies to speed up executions
-   - Runs `node index.js` with the token as an environment variable
+- Installs Node.js 20
+- Caches npm dependencies to speed up executions
+- Runs `node index.js` with the token as an environment variable
+- Can be triggered manually via `workflow_dispatch`
 
 ### Cron Schedule
 
-The cron is defined in UTC (UTC+0). To handle Europe/Paris timezone with daylight saving time:
+Since March 2026, GitHub Actions supports an IANA `timezone` field alongside `cron` in the `schedule` trigger:
 
-- Multiple UTC times are scheduled: `0 4,5,9,10,14,15 * * *`
-- The `check-run` job checks the actual Paris time and only executes at 6 AM, 11 AM, and 4 PM
-- This approach automatically handles the UTC+1 (winter) and UTC+2 (summer) offset changes
-- The `check-run` job filters to only execute at 6 AM, 11 AM, and 4 PM Paris time
+```yaml
+schedule:
+  - cron: "0 6,11,16 * * *"
+    timezone: "Europe/Paris"
+```
+
+Hours are expressed directly in the configured timezone, and daylight saving time transitions (UTC+1 in winter / UTC+2 in summer) are handled automatically — no manual conversion or filter job needed.
 
 ### Manual Trigger
 
