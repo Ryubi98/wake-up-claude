@@ -165,6 +165,6 @@ Adjust the cron and conditions accordingly in the workflow.
 
 The `index.js` file is very simple. You can customize it to:
 
-- Change the prompt sent (currently "Hi")
-- Modify the model used (`claude-3-5-haiku-20241022`)
+- Change the prompt sent
+- Modify the model used
 - Add additional logging
