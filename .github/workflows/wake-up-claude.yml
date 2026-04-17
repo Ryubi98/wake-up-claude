@@ -1,36 +1,13 @@
 name: Wake up Claude
 on:
   schedule:
-    - cron: "0 4,5,9,10,14,15 * * *" # At 04:00, 05:00, 09:00, 10:00, 14:00 and 15:00 UTC daily
+    - cron: "0 6,11,16 * * *"
+      timezone: "Europe/Paris"
   workflow_dispatch:
 
 jobs:
-  check-run:
-    runs-on: ubuntu-latest
-    outputs:
-      run: ${{ steps.check-run.outputs.run }}
-    steps:
-      - name: Check local time
-        id: check-run
-        run: |
-          if [[ "${{ github.event_name }}" == 'schedule' ]]; then
-            PARIS_HOUR=$(TZ="Europe/Paris" date +%H)
-            if [ $PARIS_HOUR -eq '6' ] || [ $PARIS_HOUR -eq '11' ] || [ $PARIS_HOUR -eq '16' ]; then 
-              echo "It's ${PARIS_HOUR}:00 in Europe/Paris. Time to run!"
-              echo "run=True" >> "$GITHUB_OUTPUT"
-            else
-              echo "It's ${PARIS_HOUR}:00 in Europe/Paris. Not a scheduled time. Waiting for next execution..."
-              echo "run=False" >> "$GITHUB_OUTPUT"
-            fi
-          else
-            echo 'Trigger is not cron, omitting time check!'
-            echo "run=True" >> "$GITHUB_OUTPUT"
-          fi
-
   wake-up:
     runs-on: ubuntu-latest
-    if: needs.check-run.outputs.run == 'True'
-    needs: check-run
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
